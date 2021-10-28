@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/lib/pq"
 	db "github.com/xiahezzz/simplebank/db/sqlc"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ import (
 type createAccountRequest struct {
 	//binding:"required" 值后台会自动对输入进行验证
 	Owner    string `json:"owner" binding:"required"`
-	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
@@ -32,6 +33,14 @@ func (server *Server) createAccount(ctx *gin.Context) {
 
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		// 可以看到错误名称
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code.Name() {
+			case "foreign_key_violation", "unique_violation":
+				ctx.JSON(http.StatusForbidden, errorRequest(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errorRequest(err))
 		return
 	}
