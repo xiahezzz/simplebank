@@ -19,7 +19,7 @@ type Server struct {
 	router *gin.Engine
 }
 
-//创建一个新的HPTTP Server并且建立路由
+//创建一个新的Http Server并且建立路由
 func NewServer(config util.Config, store db.Store) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
@@ -46,12 +46,13 @@ func (server *Server) setupRouter() {
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
 
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	//add routes to router
-	router.POST("/accounts", server.createAccount)
-	router.GET("/accounts/:id", server.getAccount)
-	router.GET("/accounts", server.listAccount)
-	router.POST("/accounts/update", server.updateAccount)
-	router.POST("/accounts/delete", server.deleteAccount)
+	authRoutes.POST("/accounts", server.createAccount)
+	authRoutes.GET("/accounts/:id", server.getAccount)
+	authRoutes.GET("/accounts", server.listAccount)
+	authRoutes.POST("/accounts/update", server.updateAccount)
+	authRoutes.POST("/accounts/delete", server.deleteAccount)
 
 	router.POST("/transfers", server.createTransfer)
 
