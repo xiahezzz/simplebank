@@ -29,7 +29,7 @@ jobs:
     - name: Build and push image
       env:
         IMAGE_TAG: ${{ github.sha }}
-       run: |
+      run: |
         docker build -t registry.cn-hangzhou.aliyuncs.com/myrepo/demo:$IMAGE_TAG .
         docker push registry.cn-hangzhou.aliyuncs.com/myrepo/demo:$IMAGE_TAG
 
