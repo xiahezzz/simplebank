@@ -17,9 +17,9 @@ jobs:
     - name: Login to aliyun
       uses: aliyun/acr-login@v1
       with:
-        region-id: cn-hangzhou # example: cn-hangzhou
-        access-key-id: ${{ secrets.ACCESS_KEY_ID }}
-        access-key-secret: ${{ secrets.ACCESS_KEY_SECRET }}
+        region-id: us-west-1 # example: cn-hangzhou
+        access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
+        access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
 
     - name: Login to ACR
       uses: aliyun/acr-login@v1
